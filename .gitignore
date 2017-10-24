@@ -1,5 +1,3 @@
 *.pyc
 *.DS_Store
-wellbeing.db
-config.py
 venv/
