@@ -1,68 +1,39 @@
+<!-- (c) RiceApps 2017 -->
 <!DOCTYPE html>
 
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Rice Blue Button</title>
-    <link rel="stylesheet" href="static/rupd_portal.css">
-</head>
+    <head>
+        <!-- meta -->
+        <meta charset="UTF-8">
+        <title>Rice Blue Button</title>
+        <!-- styles -->
+        <link rel="stylesheet" href="static/rupd_portal.css">
+    </head>
 
-<body>
+    <body>
+        <!-- Header -->
+        <div class="header">
+            <h1>RUPD Student Emergency Portal</h1>
+            <nav>
+                <a href="#"> Get Log </a>
+                <a href="#"> File a Bug </a>
+                <a href="#"> Log Out </a>
+            </nav>
+        </div>
 
-    <div class="header">
-
-        <h1>RUPD Student Emergency Portal</h1>
-        
-        <nav>
-            <a href="#"> Get Log </a>
-            <a href="#"> File a Bug </a>
-            <a href="#"> Log Out </a>
-        </nav>
-
-    </div>
-
-    <div class="side-panel">
-
-        <!-- Timestamps and Cases -->
-
-    </div>
+        <div class="panel">
+            <!-- Timestamps and Cases -->
+        </div>
 
 
-    <div id="map"></div>
+        <div id="map"></div>
+    
+        <!-- scripts -->
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+        <script src="static/js/third-party/socket.io.js"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
+        <script src="static/js/scripts.js"></script>
+    </body>
 
-    <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
-    <script src="static/socket.io.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
-    <script>
-        var socket = io("http://localhost:5000");
-        socket.on('map message', function(msg){
-            console.log(msg);
-            coord = new google.maps.LatLng(msg["latitude"], msg["longitude"]);
-            addMarker(coord);
-        });
-
-        var gmap;
-        function initMap() {
-            var mapDiv = document.getElementById('map');
-            gmap = new google.maps.Map(mapDiv, {
-                center: {lat: 29.717860, lng: -95.403333},
-                zoom: 15
-            });
-
-            // load data from db
-
-        }
-
-        function addMarker(coord) {
-
-            var marker = new google.maps.Marker({
-                position: coord,
-                title: 'Text'
-            });
-
-            marker.setMap(gmap);
-        }
-    </script>
-</body>
 </html>

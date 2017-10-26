@@ -1,0 +1,81 @@
+{
+  "data" : [
+    {
+      "allDay": 1, 
+      "description": "Immediate medical attention or in danger. For emergency.", 
+      "name": "RUPD/EMS", 
+      "number": "(713)348-6000", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "For support through issues affecting personal or academic goals, including sexual misconduct or other traumas.", 
+      "name": "Student Wellbeing Office", 
+      "number": "(713)348-3311", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "If it is not urgent, but someone's behavior is troubling, please contact SJP.", 
+      "name": "Student Judicial Programs", 
+      "number": "(713)348-4786", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 1, 
+      "description": "Counseling services.", 
+      "name": "Rice Counseling Center", 
+      "number": "(713)348-4867", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "For physical health concerns.", 
+      "name": "Student Health Services", 
+      "number": "(713)348-4966", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "General academic concerns for undergraduates.", 
+      "name": "Office of Academic Advising", 
+      "number": "(713)348-4060", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "Accommodations for a disability.", 
+      "name": "Disability Support Services", 
+      "number": "(713)348-5841", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "General support for undergraduates.", 
+      "name": "Dean of Undergraduates", 
+      "number": "(713)348-4996", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 0, 
+      "description": "Gernal support for graduate students.", 
+      "name": "Graduate and Postdoctoral Studies", 
+      "number": "(713)348-4002", 
+      "onCampus": 1
+    }, 
+    {
+      "allDay": 1, 
+      "description": "Nothing", 
+      "name": "Houston Area Women's Center", 
+      "number": "(713)528-7273", 
+      "onCampus": 0
+    }, 
+    {
+      "allDay": 1, 
+      "description": "Nothing", 
+      "name": "Houston Police Department", 
+      "number": "9-1-1", 
+      "onCampus": 0
+    }
+  ]
+}
