@@ -24,4 +24,5 @@ python-engineio==1.7.0
 python-socketio==1.8.1
 six==1.11.0
 SQLAlchemy==1.1.14
+uWSGI==2.0.15
 Werkzeug==0.12.2
