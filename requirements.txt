@@ -8,11 +8,8 @@ Flask-Migrate==2.1.1
 Flask-Script==2.0.6
 Flask-SocketIO==2.9.2
 Flask-SQLAlchemy==2.3.2
-gevent==1.2.2
-gevent-socketio==0.3.6
-gevent-websocket==0.10.1
 greenlet==0.4.12
-gunicorn==19.7.1
+gunicorn==18.0
 itsdangerous==0.24
 Jinja2==2.9.6
 Mako==1.0.7
