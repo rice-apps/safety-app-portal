@@ -1,90 +1,81 @@
 # app.py
 # (c) Rice Apps 2017
 
-import os
-import config
-from flask import Flask, request, g, render_template, jsonify
+import os, sys, traceback, json
+from flask import Flask, request, render_template, jsonify
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
+from database import db
+from models import Number, Case, BlueButtonRequest as Req
 
-# Flask
+# Config
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Services
+# Start services
 socketio = SocketIO(app)
-db = SQLAlchemy(app)
-
-# DB Tables
-from models import BlueButtonRequest as Req
-from models import Number
-from models import Case
-
+with app.app_context():
+	db.init_app(app)
 
 #########################################################################################
 # Routing
-#########################################################################################
-
 
 @app.route('/')
 def webEndpoint():
-    return render_template('index.html')
-
+	""" Get index """
+	return render_template('index.html')
 
 @app.route("/api/numbers", methods=['GET'])
 def numbersEndpoint():
+	""" Get numbers """
 	numbers = Number.query.order_by(Number.name).all()
-	return jsonify({"result": [i.serialize for i in numbers]})
-
+	return jsonify({"result": [i.serialize() for i in numbers]})
 
 @app.route("/api/bb_request", methods=['POST', 'GET', 'DELETE'])
-def locationEndpoint():
+def requestEndpoint():
+	""" Blue button request endpoint """
+
 	# Get the location in the database
-    if request.method == 'GET':
-        return location_get()
+	if request.method == 'GET':
+		return location_get()
 
-    # Add location into the database
-    if request.method == 'POST':
-        return location_post()
+	# Add location into the database
+	if request.method == 'POST':
+		return location_post()
 
-    # Delete location according to case id
-    if request.method == 'DELETE':
-        return location_delete()
+	# Delete location according to case id
+	if request.method == 'DELETE':
+		return location_delete()
 
+@app.route("/api/bb_case", methods=['GET'])
+def caseEndpoint():
+	last_case = Case.query.order_by(Case.case_id.desc()).first()
+	case_id = 0 if last_case is None else last_case.case_id + 1
+	print case_id
+	return jsonify({"result": case_id})
 
-@app.route("/api/log", methods=['GET'])
+@app.route("/api/bb_log", methods=['GET'])
 def logEndpoint():
 	requests = Req.query.order_by(Req.request_id).all()
-	return get("bb-case-tracking")
+	return jsonify({"result": [i.serialize() for i in requests]})
 
-
-@app.route("/api/resolve", methods=['POST'])
+@app.route("/api/bb_resolve", methods=['POST'])
 def resolveEndpoint():
 	r = request.form
 	case_id = r['case_id']
 
 	return
 
-
 #########################################################################################
 # Messages
-#########################################################################################
-
 
 @socketio.on('connect')
 def clientConnect():
 	print "SocketIO client connected."
 
-
 #########################################################################################
 # Helpers
-#########################################################################################
-
-
-def get(tableName):
-	return
-
 
 def location_get():
 	""" Get only un-resolved requests """
@@ -95,8 +86,8 @@ def location_get():
 		case_id = r['case_id']
 
 		# Verify case id
-		last_case = Case.query.order_by(desc(Case.case_id)).first()
-		if case_id > last_case:
+		last_case = Case.query.order_by(Case.case_id.desc()).first()
+		if case_id > last_case.case_id:
 			print "Error: this case does not exist."
 			return jsonify({"status":500})
 
@@ -104,7 +95,7 @@ def location_get():
 			   		 .add_columns(Req.case_id, Req.longitude, Req.latitude,
 			   				Req.timestamp) \
 			   		 .order_by(Req.case_id) \
-			   		 .filter_by(Req.case_id == case_id and Case.resolved == False) \
+			   		 .filter_by(Req.case_id == case_id and Case.resolved == 0) \
 			   		 .all()
 		return jsonify({"result": [i.serialize() for i in q]})
 
@@ -113,25 +104,23 @@ def location_get():
 			   		 .add_columns(Req.case_id, Req.longitude, Req.latitude,
 			   					  Req.timestamp) \
 			   		 .order_by(Req.case_id) \
-			   		 .filter_by(Req.resolved == False) \
+			   		 .filter_by(Req.resolved == 0) \
 			   		 .all()
 		return jsonify({"result": [i.serialize() for i in q]})
-
 
 def location_post():
 	r = request.form
 	case_id = r['case_id']
 
 	# Add new case if necessary
-	last_case = Case.query.order_by(desc(Case.case_id)).first()
-	if last_case != case_id:
-		new_id = 0 if last_case is None else last_case + 1
+	last_case = Case.query.order_by(Case.case_id.desc()).first()
+	if not last_case or last_case.case_id != case_id:
+		c = Case(resolved=0)
 		try:
-			c = Case(resolved=False)
 			db.session.add(c)
 			db.session.commit()
 		except:
-			print "Error: couldn't add new case."
+			print "Error: couldn't add new case: ", sys.exc_info()[1]
 			return jsonify({"status": 500})
 
 	# Add to bb-case-tracking
@@ -144,25 +133,50 @@ def location_post():
 		db.session.add(req)
 		db.session.commit()
 	except:
-		print "Error: couldn't add new request."
+		print "Error: couldn't add new request.", sys.exc_info()[1]
 		return jsonify({"status": 500})
-		
+
 	# Send message to client
-	socketio.emit('map message', f)
+	socketio.emit('map message', r)
 
 	return jsonify({"status": 200})
-
 
 def location_delete():
 	# Delete a case
 	return
 
-
 #########################################################################################
 # Main
-#########################################################################################
 
+def insert_number():
+	data = []
+	numbers = json.load(open('data/numbers_data.json'))['data']
+	try:
+		for n in numbers:
+			row = Number(name=n['name'], number=n['number'], on_campus=n['onCampus'], all_day=n['allDay'], description=n['description'])
+			db.session.add(row)
+			db.session.commit()
+	except:
+		print "Error: couldn't add new number.", sys.exc_info()[1]
+
+def reset():
+	n = Number.query.delete()
+	print n, " rows in Number deleted"
+	b = Req.query.delete()
+	print b, " rows in BB deleted"
+	c = Case.query.delete()
+	print c, " rows in Case deleted"
+
+def populate_db():
+	# add numbers
+	with app.app_context():
+		reset()
+		insert_number()
 
 if __name__ == '__main__':
 	socketio.run(app)
-
+	if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+		if len(sys.argv) > 1:
+			if sys.argv[1] == '-r':
+				populate_db()
+	

@@ -1,7 +1,7 @@
 # models.py
 # (c) Rice Apps 2017
 
-from app import db
+from database import db
 from flask_sqlalchemy import Model, SQLAlchemy
 
 def serialize_datetime(value):
@@ -15,8 +15,8 @@ class BlueButtonRequest(db.Model):
     request_id = db.Column(db.Integer, primary_key=True)
     case_id = db.Column(db.Integer, db.ForeignKey('case.case_id'), nullable=False)
     device_id = db.Column(db.Text)
-    longitude = db.Column(db.REAL)
-    latitude = db.Column(db.REAL)
+    longitude = db.Column(db.Float)
+    latitude = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
     case = db.relationship('Case', backref='locations', lazy=True)
 

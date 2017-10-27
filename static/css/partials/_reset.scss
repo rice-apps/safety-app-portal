@@ -1,0 +1,68 @@
+// _reset.scss
+// (c) RiceApps 2017
+
+/* body styles */
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+/* wrapper styles */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
+  	display: block;
+}
+
+/* text styles */
+a {
+    background-color: transparent;
+    text-decoration: none;
+    &:hover {
+    	outline: 0;
+    }
+}
+
+ul {
+    list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    padding: 0;
+    margin: 0;
+}
+
+b,
+strong {
+  	font-weight: bold;
+}
+
+/* form styles */
+input {
+  	line-height: normal;
+}
+
+textarea {
+  	overflow: auto;
+}
+
+/* table styles */
+table {
+  	border-collapse: collapse;
+  	border-spacing: 0;
+}
+
+td,
+th {
+  	padding: 0;
+}

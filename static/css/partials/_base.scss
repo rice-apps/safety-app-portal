@@ -1,2 +1,11 @@
 // _base.scss
 // (c) RiceApps 2017
+
+html, body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	@include box-sizing(border-box);
+}
