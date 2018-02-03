@@ -29,8 +29,7 @@ With the provided `.env` file, once you `cd`, your virtual environment should st
 * Navigate to directory 
 	* `cd safety-app-portal`
 
-Run `setup.py` to set-up a local version of the database.
-Run `app.py` to launch the Flask app.
+Run `python app.py` to launch.
 
 ## Heroku Deployment
 
