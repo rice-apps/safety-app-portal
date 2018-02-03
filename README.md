@@ -16,6 +16,7 @@ Set up your Python virtual environment, and install all required packages.
 ### Starting Up
 
 #### Initial Setup:
+_In the project repo._
 * Create your virtual environment:
 	* `virtualenv venv`
 * Activate environment:
