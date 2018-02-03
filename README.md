@@ -11,7 +11,7 @@ Set up your Python virtual environment, and install all required packages.
 	* `sudo pip install virtualenv`
 * Use _autoenv_ to load directory-based environment: 
 	* `sudo pip install autoenv` 
-	* `echo "source 'which activate.sh'" >> ~/.bashrc`
+	* `echo "source ``which activate.sh``" >> ~/.bashrc`
 
 ### Starting Up
 
