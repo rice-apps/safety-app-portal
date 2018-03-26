@@ -50,6 +50,8 @@ def requestEndpoint():
 
 @app.route("/api/bb_case", methods=['GET'])
 def caseEndpoint():
+	""" Case ID endpoint """
+	# Determine Case ID to use
 	last_case = Case.query.order_by(Case.case_id.desc()).first()
 	case_id = 0 if last_case is None else last_case.case_id + 1
 	print case_id
@@ -64,6 +66,8 @@ def logEndpoint():
 def resolveEndpoint():
 	r = request.form
 	case_id = r['case_id']
+	
+	# TODO: Handle resolve logic
 
 	return
 
@@ -153,7 +157,8 @@ def insert_number():
 	numbers = json.load(open('data/numbers_data.json'))['data']
 	try:
 		for n in numbers:
-			row = Number(name=n['name'], number=n['number'], on_campus=n['onCampus'], all_day=n['allDay'], description=n['description'])
+			row = Number(name=n['name'], number=n['number'], on_campus=n['onCampus'], \
+				all_day=n['allDay'], description=n['description'])
 			db.session.add(row)
 			db.session.commit()
 	except:

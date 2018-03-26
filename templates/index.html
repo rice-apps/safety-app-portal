@@ -1,4 +1,5 @@
 <!-- (c) RiceApps 2017 -->
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -25,6 +26,12 @@
                 <!-- Timestamps and Cases -->
                 <div>
                     <h3>Active Requests</h3>
+                    <div class="requests">
+                        <table id="requests-table">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -39,7 +46,8 @@
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
         <script>
             var gmap;
-
+            
+            // initialize map
             function initMap() {
                 gmap = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: 29.717394, lng: -95.402931},
