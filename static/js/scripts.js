@@ -4,6 +4,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 
+// TODO: how to get document.domain / location.port?
 var socket = io.connect('http://' + document.domain + ':' + location.port);
 var cases = {};
 
@@ -19,7 +20,6 @@ function addMarker(coord) {
 }
 
 // Server calls
-
 function resolve(case_id) {
     $.post('/api/bb_resolve', {
         case_id: case_id

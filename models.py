@@ -9,7 +9,6 @@ def serialize_datetime(value):
         return None
     return value.strftime("%Y-%m-%d %H:%M:%S")
 
-
 class BlueButtonRequest(db.Model):
     __tablename__ = 'bb-case-tracking'
     request_id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +18,7 @@ class BlueButtonRequest(db.Model):
     latitude = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
     case = db.relationship('Case', backref='locations', lazy=True)
-
+    
     def __repr__(self):
         return "ID: {} - [{}] Lat {}, Long {}".format(self.case_id, self.timestamp, self.latitude, self.longitude)
 
@@ -32,12 +31,12 @@ class BlueButtonRequest(db.Model):
             "latitude": self.latitude,
             "timestamp": serialize_datetime(self.timestamp)
         }
-
+	
 class Case(db.Model):
     __tablename__ = 'case'
     case_id = db.Column(db.Integer, primary_key=True)
     resolved = db.Column(db.Integer)
-
+	
     def __repr__(self):
         return "ID <{}>".format(self.case_id)
 
@@ -46,7 +45,7 @@ class Case(db.Model):
             "case_id": self.case_id,
             "resolved": self.resolved
         }
-
+	
 class Number(db.Model):
     __tablename__ = 'numbers'
     name = db.Column(db.Text, primary_key=True)
