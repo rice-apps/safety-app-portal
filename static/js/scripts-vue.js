@@ -1,3 +1,12 @@
+var app = new Vue({
+    el: "#app",
+    delimiters: ["[[", "]]"],
+    data: {
+        message: "Hello, World!"
+    }
+})
+
+
 // Request item to be displayed on
 Vue.component('request-item', {
     data: function() {

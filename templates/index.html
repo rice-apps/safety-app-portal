@@ -6,14 +6,15 @@
         <!-- Meta data -->
         <meta charset="UTF-8">
         <title>Rice Safety App Portal</title>
+        <!-- Script -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/static/js/scripts-vue.js"></script>
         <!-- styles -->
         <link rel="stylesheet" href="static/css/main-update.css">
     </head>
     
     <body>
-        <!-- Navigation Bar -->
-        
-        <div class="body">
+        <div id="app">
             <!-- Panel -->
             <div id="panel">
                 <p> Sample status: {{ status }}, requestList: {{ requestList }}</p>
@@ -22,14 +23,15 @@
                         v-for="request in requestList"
                         v-bind:key="request.id"
                         v-bind:val="request.val"></request-item> -->
-                    <li is="request-item"></li>
-                    <!-- <request-item></request-item> -->
+                    <!-- <li is="request-item"></li> -->
+                    <request-item></request-item>
                 </ol>
                 
             </div>
-            <!-- Map -->
-            <div id="map"> </div>
         </div>
+
+        <!-- Map -->
+        <div id="map"> </div>
         
         <!-- Scripts -->
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
@@ -92,7 +94,6 @@
                 }
             });
         </script> -->
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-        <script type="text/javascript" charset="utf-8" src="/static/js/scripts-vue.js"></script>
+        
     </body>
 </html>
