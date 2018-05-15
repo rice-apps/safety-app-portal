@@ -5,7 +5,7 @@
 // Global variables
 
 // TODO: how to get document.domain / location.port?
-var socket = io.connect('http://' + document.domain + ':' + location.port);
+var socket = io.connect('https://' + document.domain + ':' + location.port);
 var cases = {};
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ function resolve(case_id) {
 // Onload
 
 $(function() {
-
+    
     $('.resolve-btn').on('click', function() {
         resolve(0);
     });
@@ -45,7 +45,7 @@ $(function() {
         console.log(msg);
         if (!(msg.case_id in cases))
             cases[msg.case_id] = [];
-
+        
         var coord = new google.maps.LatLng(msg.latitude, msg.longitude);
         cases[msg.case_id].push(coord);
         addMarker(coord);

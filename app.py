@@ -18,7 +18,15 @@ PRIVATE_KEY = "secret_key"
 print Number.__class__
 
 # Config
-app = Flask(__name__)
+# app = Flask(__name__)
+class CustomFlask(Flask):
+    jinja_options = Flask.jinja_options.copy()
+    jinja_options.update(dict(
+        variable_start_string='%%',  # Default is '{{', I'm changing this because Vue.js uses '{{' / '}}'
+        variable_end_string='%%',
+    ))
+
+app = CustomFlask(__name__)  # This replaces your existing "app = Flask(__name__)"
 
 # for i in os.environ.keys():
 # 	print i + " " + os.environ[i]
@@ -43,7 +51,7 @@ with app.app_context():
 def webEndpoint():
 	""" Get index """
 	return render_template('index.html')
-
+	
 
 @app.route("/api/numbers", methods=['GET'])
 def numbersEndpoint():
@@ -88,11 +96,10 @@ def caseEndpoint():
 		jwt_token = case_create()
 		return jsonify({"token": jwt_token})
 	else:
+		# Unsupported method
 		return jsonify({"status": 400})
-
 	
 	
-
 @app.route("/api/bb_log", methods=['GET'])
 def logEndpoint():
 	requests = Req.query.order_by(Req.request_id).all()
@@ -114,6 +121,9 @@ def resolveEndpoint():
 @socketio.on('connect')
 def clientConnect():
 	print "SocketIO client connected."
+	connect_msg = {"status": "success"}
+	socketio.emit('connect confirm', connect_msg)
+	print "Finish emit"
 	
 
 #########################################################################################
@@ -124,7 +134,7 @@ def clientConnect():
 def location_get():
 	""" Get only un-resolved requests """
 	r = request.form
-	
+
 	# Case-specific get
 	if 'case_id' in r:
 		case_id = r['case_id']

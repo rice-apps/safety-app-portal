@@ -1,0 +1,57 @@
+<!-- (c) RiceApps 2017 -->
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+        <!-- meta -->
+        <meta charset="UTF-8">
+        <title>Rice Blue Button</title>
+        <!-- styles -->
+        <link rel="stylesheet" href="static/css/main.css">
+    </head>
+
+    <body>
+        <!-- Header -->
+        <nav>
+            <a href="#"> RUPD Portal </a>
+            <a href="#"> Get Log </a>       <!-- Download all requests -->
+            <a href="#"> File a Bug </a>    <!-- Email -->
+            <a href="#"> Log Out </a>       
+        </nav>
+
+        <div class="body">
+            <div class="panel">
+                <!-- Timestamps and Cases -->
+                
+                <!-- TODO: Add tabels to display case, timestamp and resolve button -->
+
+                <div>
+                    <h3>Active Requests</h3>
+                </div>
+            </div>
+
+            <div id="map"></div>
+        </div>
+
+        
+        
+        <!-- scripts -->
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+        <script src="static/js/third-party/socket.io.js"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
+        <script>
+            var gmap;
+
+            function initMap() {
+                gmap = new google.maps.Map(document.getElementById('map'), {
+                    center: {lat: 29.717394, lng: -95.402931},
+                    zoom: 16
+                });
+            }
+        </script>
+        <script src="static/js/scripts-min.js"></script>
+        
+    </body>
+
+</html>

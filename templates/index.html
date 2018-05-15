@@ -1,48 +1,41 @@
-<!-- (c) RiceApps 2017 -->
 <!DOCTYPE html>
 
 <html lang="en">
 
     <head>
-        <!-- meta -->
+        <!-- Meta data -->
         <meta charset="UTF-8">
-        <title>Rice Blue Button</title>
+        <title>Rice Safety App Portal</title>
         <!-- styles -->
-        <link rel="stylesheet" href="static/css/main.css">
+        <link rel="stylesheet" href="static/css/main-update.css">
     </head>
-
+    
     <body>
-        <!-- Header -->
-        <nav>
-            <a href="#"> RUPD Portal </a>
-            <a href="#"> Get Log </a>       <!-- Download all requests -->
-            <a href="#"> File a Bug </a>    <!-- Email -->
-            <a href="#"> Log Out </a>       
-        </nav>
-
-        <div class="body">
-            <div class="panel">
-                <!-- Timestamps and Cases -->
-
-                <!-- TODO: Add tabels to display case, timestamp and resolve button -->
-
-                <div>
-                    <h3>Active Requests</h3>
-                </div>
-            </div>
-
-            <div id="map"></div>
-        </div>
-
+        <!-- Navigation Bar -->
         
-
-        <!-- scripts -->
-        <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
-        <script src="static/js/third-party/socket.io.js"></script>
+        <div class="body">
+            <!-- Panel -->
+            <div id="panel">
+                <p> Sample status: {{ status }}, requestList: {{ requestList }}</p>
+                <ol id="request-list">
+                    <!-- <request-item 
+                        v-for="request in requestList"
+                        v-bind:key="request.id"
+                        v-bind:val="request.val"></request-item> -->
+                    <li is="request-item"></li>
+                    <!-- <request-item></request-item> -->
+                </ol>
+                
+            </div>
+            <!-- Map -->
+            <div id="map"> </div>
+        </div>
+        
+        <!-- Scripts -->
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
         <script>
             var gmap;
-
+            
             function initMap() {
                 gmap = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: 29.717394, lng: -95.402931},
@@ -50,8 +43,56 @@
                 });
             }
         </script>
-        <script src="static/js/scripts-min.js"></script>
-        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.slim.js"></script>
+        <script>
+            const socket = io('http://' + document.domain + ':' + location.port);
+            socket.on('map message', function(msg) {
+                console.log(msg);
+                if (!(msg.case_id in cases))
+                    cases[msg.case_id] = [];
+                
+                var coord = new google.maps.LatLng(msg.latitude, msg.longitude);
+                cases[msg.case_id].push(coord);
+                addMarker(coord);
+            });
+            
+            socket.on('connect confirm', function(msg) {
+                console.log("Enter connect confirm");
+                console.log(msg);
+                console.log(msg.status);
+            // });
+            });
+        </script>
+        <!-- <script>
+            Vue.component('request-item', {
+                data: function() {
+                    return {
+                        val: {
+                            request_id: 0,
+                            case_id: 0,
+                            devide_id: 0,
+                            longitude: 0,
+                            latitude: 0,
+                            timestamp: Date.now()
+                        }
+                    };
+                },
+                template: '<li> request_id: {{ val.request_id }}, case_id: {{ val.case_id }}, device_id: {{ val.device_id}}, {{ val.longitude }} {{ val.latitude}} {{ val.timestamp}} </li>'
+            });
+            
+            var requestListModel = {
+                a: [1, 2, 3]
+            };
+            
+            var vm = new Vue({
+                el: '#panel',
+                data: {
+                    status: "success",
+                    requestList: requestListModel
+                }
+            });
+        </script> -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/static/js/scripts-vue.js"></script>
     </body>
-
 </html>
