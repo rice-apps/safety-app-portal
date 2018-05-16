@@ -1,0 +1,29 @@
+# Front End
+    -   Vue.js
+    
+
+# Back End
+    -   CAS + FLASK; Auth for RUPD
+    -   Encrypted Token:
+        public key:
+        private key:
+        verify:
+            - When a client connects to the server, the server generates a encrypted web token based on:
+                (1) client's UUID
+                (2) server's private key
+            - Pass the web token to the client.
+            - CLient stores the web token locally. Whenever a client sends a request to the server, the clien
+                shold inclde the web token in the headers.
+            - Upon receving the requests from the client, the server will first verify the web token in the 
+                request' header to see if the request matches with the client's identity.
+    -   Testing
+        -   Add Testing library / startegy
+
+
+# Use Case
+
+  Registration
+    -   Register an user
+        -   
+  Use
+    -   Send a blue button request
