@@ -1,12 +1,3 @@
-var app = new Vue({
-    el: "#app",
-    delimiters: ["[[", "]]"],
-    data: {
-        message: "Hello, World!"
-    }
-})
-
-
 // Request item to be displayed on
 Vue.component('request-item', {
     data: function() {
@@ -26,14 +17,20 @@ Vue.component('request-item', {
         device_id: {{ val.device_id}}, {{ val.longitude }} {{ val.latitude}} {{ val.timestamp}} </li>`
 });
 
-// var requestListModel = {
-//     a: [1, 2, 3]
-// };
+var requestListModel = [];
 
-// var vm = new Vue({
-//     el: '#panel',
-//     data: {
-//         status: "success",
-//         requestList: requestListModel
-//     }
-// }); 
+var panel = new Vue({
+    el: '#panel',
+    data: {
+        status: "success",
+        requestList: requestListModel
+    }
+}); 
+
+var app = new Vue({
+    el: "#app",
+    delimiters: ["[[", "]]"],
+    data: {
+        message: "Hello, World!"
+    }
+})

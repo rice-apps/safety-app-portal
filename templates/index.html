@@ -8,7 +8,7 @@
         <title>Rice Safety App Portal</title>
         <!-- Script -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-        <script type="text/javascript" charset="utf-8" src="/static/js/scripts-vue.js"></script>
+        
         <!-- styles -->
         <link rel="stylesheet" href="static/css/main-update.css">
     </head>
@@ -16,18 +16,20 @@
     <body>
         <div id="app">
             <!-- Panel -->
+            {% raw %}
             <div id="panel">
-                <p> Sample status: {{ status }}, requestList: {{ requestList }}</p>
+                <p> Sample status: {{ status }}, requestList: {{ requestList.length }}</p>
                 <ol id="request-list">
-                    <!-- <request-item 
+                    <request-item 
                         v-for="request in requestList"
                         v-bind:key="request.id"
-                        v-bind:val="request.val"></request-item> -->
-                    <!-- <li is="request-item"></li> -->
-                    <request-item></request-item>
+                        v-bind:val="request.val"></request-item>
+                    <!-- <li is="request-item"></li>
+                        <request-item></request-item> -->
                 </ol>
                 
             </div>
+            {% endraw %}
         </div>
 
         <!-- Map -->
@@ -94,6 +96,6 @@
                 }
             });
         </script> -->
-        
+        <script type="text/javascript" charset="utf-8" src="/static/js/scripts-vue.js"></script>
     </body>
 </html>
