@@ -3,6 +3,7 @@
 
 from database import db
 from flask_sqlalchemy import Model, SQLAlchemy
+from collections import OrderedDict
 
 def serialize_datetime(value):
     if value is None:
@@ -17,7 +18,7 @@ class BlueButtonRequest(db.Model):
     longitude = db.Column(db.Float)
     latitude = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
-    case = db.relationship('Case', backref='locations', lazy=True)
+    case = db.relationship('Case', backref=db.backref('bb-case-tracking'), lazy=True)
     
     def __repr__(self):
         return "ID: {} - [{}] Lat {}, Long {}".format(self.case_id, self.timestamp, self.latitude, self.longitude)
@@ -31,6 +32,12 @@ class BlueButtonRequest(db.Model):
             "latitude": self.latitude,
             "timestamp": serialize_datetime(self.timestamp)
         }
+    
+    def _asdict(self):
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result
 	
 class Case(db.Model):
     __tablename__ = 'case'
@@ -45,6 +52,13 @@ class Case(db.Model):
             "case_id": self.case_id,
             "resolved": self.resolved
         }
+    
+    def _asdict(self):
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+
+        return result
 	
 class Number(db.Model):
     __tablename__ = 'numbers'

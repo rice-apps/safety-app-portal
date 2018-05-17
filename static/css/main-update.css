@@ -72,8 +72,8 @@ position: relative;
 width: 100%;
 height: calc(100% - 60px); }
 
-.panel {
-width: 200px;
+#panel {
+width: 400px;
 height: 100%;
 position: absolute;
 top: 0px;
@@ -82,10 +82,10 @@ display: inline-block;
 margin: 0; }
 
 #map {
-width: calc(100% - 200px);
+width: calc(100% - 400px);
 height: 100%;
 position: absolute;
 top: 0px;
-left: 300px;
+left: 430px;
 display: inline-block;
 margin: 0; }

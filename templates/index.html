@@ -11,6 +11,9 @@
         
         <!-- styles -->
         <link rel="stylesheet" href="static/css/main-update.css">
+
+        <!-- Fix 'failed to load favicon -->
+        <link rel="shortcut icon" href="#">
     </head>
     
     <body>
@@ -18,12 +21,9 @@
             <!-- Panel -->
             {% raw %}
             <div id="panel">
-                <p> Sample status: {{ status }}, requestList: {{ requestList.length }}</p>
+                <p> Panel status: {{ status }}, requestList: {{ requestList.length }}</p>
                 <ol id="request-list">
-                    <request-item 
-                        v-for="request in requestList"
-                        v-bind:key="request.id"
-                        v-bind:val="request.val"></request-item>
+                    <request-item v-for="request in requestList" v-bind:key="request.id" v-bind:val="request"></request-item>
                     <!-- <li is="request-item"></li>
                         <request-item></request-item> -->
                 </ol>
@@ -43,59 +43,19 @@
             function initMap() {
                 gmap = new google.maps.Map(document.getElementById('map'), {
                     center: {lat: 29.717394, lng: -95.402931},
-                    zoom: 16
+                    zoom: 16,
+                    zoomControl: true,
+                    mapTypeControl: true,
+                    scaleControl: true,
+                    streetViewControl: true,
+                    rotateControl: true,
+                    fullscreenControl: true
+
                 });
             }
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.slim.js"></script>
-        <script>
-            const socket = io('http://' + document.domain + ':' + location.port);
-            socket.on('map message', function(msg) {
-                console.log(msg);
-                if (!(msg.case_id in cases))
-                    cases[msg.case_id] = [];
-                
-                var coord = new google.maps.LatLng(msg.latitude, msg.longitude);
-                cases[msg.case_id].push(coord);
-                addMarker(coord);
-            });
-            
-            socket.on('connect confirm', function(msg) {
-                console.log("Enter connect confirm");
-                console.log(msg);
-                console.log(msg.status);
-            // });
-            });
-        </script>
-        <!-- <script>
-            Vue.component('request-item', {
-                data: function() {
-                    return {
-                        val: {
-                            request_id: 0,
-                            case_id: 0,
-                            devide_id: 0,
-                            longitude: 0,
-                            latitude: 0,
-                            timestamp: Date.now()
-                        }
-                    };
-                },
-                template: '<li> request_id: {{ val.request_id }}, case_id: {{ val.case_id }}, device_id: {{ val.device_id}}, {{ val.longitude }} {{ val.latitude}} {{ val.timestamp}} </li>'
-            });
-            
-            var requestListModel = {
-                a: [1, 2, 3]
-            };
-            
-            var vm = new Vue({
-                el: '#panel',
-                data: {
-                    status: "success",
-                    requestList: requestListModel
-                }
-            });
-        </script> -->
+        <script src="/static/js/third-party/jquery-3.3.1.js"></script>
         <script type="text/javascript" charset="utf-8" src="/static/js/scripts-vue.js"></script>
     </body>
 </html>

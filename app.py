@@ -15,8 +15,6 @@ from cryptography.hazmat.primitives import serialization
 
 PRIVATE_KEY = "secret_key"
 
-print Number.__class__
-
 # Config
 # app = Flask(__name__)
 class CustomFlask(Flask):
@@ -135,6 +133,10 @@ def clientConnect():
 
 ## TODO: Param -> request.form
 
+def date_handler(obj):
+	if hasattr(obj, 'isoformat'):
+		return obj.isoformat()
+
 def location_get():
 	""" Get only un-resolved requests """
 	r = request.form
@@ -160,12 +162,20 @@ def location_get():
 	else:
 		q = Req.query.join(Case, Req.case_id == Case.case_id) \
 			.add_columns(Req.case_id, Req.longitude, Req.latitude,
-		                 Req.timestamp) \
+				Req.timestamp) \
 			.order_by(Req.case_id) \
-			#.filter_by(resolved=0) \
-			#.all()
-		return jsonify({"result": [i.serialize() for i in q]})
+			.filter_by(resolved=0) \
+			.all()
 		
+		data = []
+		for item in q:
+			d = item._asdict()
+			data.append(d)
+		
+		res = {"result": data}
+		
+		return json.dumps(res, default=date_handler)
+
 
 def location_post():
 	"""
