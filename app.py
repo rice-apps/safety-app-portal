@@ -4,8 +4,8 @@
 import os, sys, traceback, json
 from flask import Flask, request, render_template, jsonify
 from flask_socketio import SocketIO
-from flask_sqlalchemy import SQLAlchemy
 from database import db
+from flask_sqlalchemy import SQLAlchemy
 from models import Number, Case, BlueButtonRequest as Req
 
 # PyJWT
@@ -15,8 +15,7 @@ from cryptography.hazmat.primitives import serialization
 
 PRIVATE_KEY = "secret_key"
 
-# Config
-# app = Flask(__name__)
+# Configuration
 class CustomFlask(Flask):
     jinja_options = Flask.jinja_options.copy()
     jinja_options.update(dict(
@@ -28,10 +27,7 @@ class CustomFlask(Flask):
 		comment_end_string='#}',
     ))
 
-app = CustomFlask(__name__)  # This replaces your existing "app = Flask(__name__)"
-
-# for i in os.environ.keys():
-# 	print i + " " + os.environ[i]
+app = CustomFlask(__name__)
 
 # app.config.from_object(os.environ['APP_SETTINGS'])
 app.config.from_object("config.DevelopmentConfig")
@@ -61,24 +57,26 @@ def numbersEndpoint():
 	numbers = Number.query.order_by(Number.name).all()
 	return jsonify({"result": [i.serialize() for i in numbers]})
 	
-
-@app.route("/api/bb_request", methods=['POST', 'GET', 'DELETE'])
+	
+@app.route("/api/request", methods=['POST', 'GET', 'DELETE'])
 def requestEndpoint():
 	""" Blue button request endpoint """
+	# TODO: Validate user identity
 	
 	# Get the location in the database
 	if request.method == 'GET':
-		return location_get()
+		return request_get()
 	
 	# Add location into the database
 	if request.method == 'POST':
-		return location_post()
+		return request_post()
 	
 	# Delete location according to case id
+	# TODO: When to delete?
 	if request.method == 'DELETE':
-		return location_delete()
+		return request_del()
 	
-@app.route("/api/bb_case", methods=['GET', 'POST'])
+@app.route("/api/case", methods=['GET', 'POST'])
 def caseEndpoint():
 	"""
 		End point for registering a new user
@@ -88,7 +86,7 @@ def caseEndpoint():
 		TODO: Add 'device uuid' into the header to register
 	"""
 
-	# Provide
+	# Response 
 	if request.method == 'GET':
 		# Determine Case ID to use
 		last_case = Case.query.order_by(Case.case_id.desc()).first()
@@ -102,12 +100,13 @@ def caseEndpoint():
 		return jsonify({"status": 400})
 	
 	
-@app.route("/api/bb_log", methods=['GET'])
+@app.route("/api/log", methods=['GET'])
 def logEndpoint():
 	requests = Req.query.order_by(Req.request_id).all()
 	return jsonify({"result": [i.serialize() for i in requests]})
 	
-@app.route("/api/bb_resolve", methods=['POST'])
+
+@app.route("/api/resolve", methods=['POST'])
 def resolveEndpoint():
 	r = request.form
 	case_id = r['case_id']
@@ -122,10 +121,12 @@ def resolveEndpoint():
 
 @socketio.on('connect')
 def clientConnect():
-	print "SocketIO client connected."
+	print "[Socket]SocketIO client connected."
 	connect_msg = {"status": "success"}
 	socketio.emit('connect confirm', connect_msg)
-	print "Finish emit"
+	print "[Socket]Finish emit"
+
+	
 	
 
 #########################################################################################
@@ -137,13 +138,14 @@ def date_handler(obj):
 	if hasattr(obj, 'isoformat'):
 		return obj.isoformat()
 
-def location_get():
-	""" Get only un-resolved requests """
-	r = request.form
+def request_get():
+	""" Get un-resolved requests """
+	req = request.form
+	
+	if 'case_id' in req:
+		# Case-specific get
 
-	# Case-specific get
-	if 'case_id' in r:
-		case_id = r['case_id']
+		case_id = req['case_id']
 		
 		# Verify case id
 		last_case = Case.query.order_by(Case.case_id.desc()).first()
@@ -158,8 +160,9 @@ def location_get():
 			.filter_by(Req.case_id == case_id and Case.resolved == 0) \
 			.all()
 		return jsonify({"result": [i.serialize() for i in q]})
-		
 	else:
+		# Get all the active requests
+
 		q = Req.query.join(Case, Req.case_id == Case.case_id) \
 			.add_columns(Req.case_id, Req.longitude, Req.latitude,
 				Req.timestamp) \
@@ -177,62 +180,59 @@ def location_get():
 		return json.dumps(res, default=date_handler)
 
 
-def location_post():
+def request_post():
 	"""
 		Content-Type: application/json
-
 	"""
-	print "[Reuqest] " + str(request)
-	print "[Form] " + str(request.form)
-	print "[JSON DATA] " + str(request.get_json())
-
-	r = request.get_json()
-
-	# Verify required field
-	# TODO: is checing 'case_id' necessary?
-	#		if new case, is 'case_id' in the request headers?
-	try:
-		case_id = r['case_id']
-		device_id = r['device_id']
-		longitude = r['longitude']
-		latitude = r['latitude']
-
-	except KeyError as e:
-		print sys.exc_info()
-		return jsonify({"status": 400})
+	data = request.form
 	
-	# Add new case if necessary
-	last_case = Case.query.order_by(Case.case_id.desc()).first()
-	if last_case :
-		c = Case(resolved=0)
+	print data
+
+	if 'case_id' not in data:
+		# A new case
 		try:
-			db.session.add(c)
+			device_id = data['device_id']
+			longitude = data['longitude']
+			latitude = data['latitude']
+
+		except KeyError as e:
+			# TODO: Handle missing param
+			print sys.exc_info()
+			return jsonify({"status": 400})
+		
+		# Create a new case
+		case = Case(resolved = 0)
+		case_id = None
+
+		try:
+			db.session.add(case)
 			db.session.commit()
-			case_id = c.case_id
-			print "[New Case] " + str(c.serialize())
+			# Save the case id
+			case_id = case.case_id
 		except:
-			print "Error: couldn't add new case: ", sys.exc_info()[1]
-			return jsonify({"status": 500})
+			print sys.exc_info()
 
-	# Add to bb-case-tracking
-	try:
-		req = Req(case_id=case_id,
-		          device_id=device_id,
-		          longitude=longitude,
-		          latitude=latitude,
-		          timestamp=db.func.current_timestamp())
-		
-		print "Finish generating new req."
-		
-		db.session.add(req)
-		db.session.commit()
-		
-	except Exception as e:
-		print e
-		print "Error: couldn't add new request.", sys.exc_info()
-		return jsonify({"status": 500})
+	else:
+		# Add a new request to an existing case
+		try:
+			case_id = data['case_id']
+			device_id = data['device_id']
+			longitude = data['longitude']
+			latitude = data['latitude']
 
+		except KeyError as e:
+			# TODO: Handle missing param
+			print sys.exc_info()
+			return jsonify({"status": 400})
 	
+	# Add request into db
+	req = Req(case_id = case_id,
+					device_id = device_id,
+					longitude = longitude,
+					latitude = latitude)
+	db.session.add(req)
+	db.session.commit()
+
 	# Send useful information to the front end
 	map_msg = {"case_id": r['case_id'],
 	           "latitude": r['latitude'],
@@ -241,15 +241,75 @@ def location_post():
 	# Send message to client
 	socketio.emit('map message', map_msg)
 	
-	return jsonify({"status": 200})
+
+	return jsonify({'status': 'success'})
+
+
+# def request_post():
+# 	"""
+# 		Content-Type: application/json
+		
+# 	"""
+# 	print "[Reuqest] " + str(request)
+# 	print "[Form] " + str(request.form)
+# 	print "[JSON DATA] " + str(request.get_json())
+
+# 	r = request.get_json()
+
+# 	# Verify required field
+# 	# TODO: is checing 'case_id' necessary?
+# 	#		if new case, is 'case_id' in the request headers?
+# 	try:
+# 		case_id = r['case_id']
+# 		device_id = r['device_id']
+# 		longitude = r['longitude']
+# 		latitude = r['latitude']
+
+# 	except KeyError as e:
+# 		print sys.exc_info()
+# 		return jsonify({"status": 400})
 	
-def location_delete():
-	# Delete a case
+# 	# Add new case if necessary
+# 	last_case = Case.query.order_by(Case.case_id.desc()).first()
+# 	if last_case:
+# 		c = Case(resolved=0)
+# 		try:
+# 			db.session.add(c)
+# 			db.session.commit()
+# 			case_id = c.case_id
+# 			print "[New Case] " + str(c.serialize())
+# 		except:
+# 			print "Error: couldn't add new case: ", sys.exc_info()[1]
+# 			return jsonify({"status": 500})
+
+# 	# Add to bb-case-tracking
+# 	try:
+# 		req = Req(case_id=case_id,
+# 		          device_id=device_id,
+# 		          longitude=longitude,
+# 		          latitude=latitude,
+# 		          timestamp=db.func.current_timestamp())
+		
+# 		print "Finish generating new req."
+		
+# 		db.session.add(req)
+# 		db.session.commit()
+		
+# 	except Exception as e:
+# 		print e
+# 		print "Error: couldn't add new request.", sys.exc_info()
+# 		return jsonify({"status": 500})
+
 	
+# 	# Send useful information to the front end
+# 	map_msg = {"case_id": r['case_id'],
+# 	           "latitude": r['latitude'],
+# 	           "longitude": r['longitude']}
 	
+# 	# Send message to client
+# 	socketio.emit('map message', map_msg)
 	
-	return
-	
+# 	return jsonify({"status": 200})
 
 def case_resolve(case_id):
 	"""
@@ -288,6 +348,9 @@ def case_create():
 
 	return token
 
+def request_del():
+
+	return 0
 		
 
 

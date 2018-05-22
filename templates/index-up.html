@@ -39,7 +39,7 @@
         <!-- scripts -->
         <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
         <script src="static/js/third-party/socket.io.js"></script>
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
+        <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDMFSuTtdme517ox9FITQ0yA8ER3PL5_tw&callback=initMap"></script>
         <script>
             var gmap;
 
@@ -49,8 +49,16 @@
                     zoom: 16
                 });
             }
+            
+            // // Function for adding a marker to the page.
+            // function addMarker(location) {
+            //     marker = new google.maps.Marker({
+            //         position: location,
+            //         map: map
+            //     });
+            // }
         </script>
-        <script src="static/js/scripts-min.js"></script>
+        <script src="static/js/scripts-vue.js"></script>
         
     </body>
 

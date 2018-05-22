@@ -11,7 +11,7 @@ def serialize_datetime(value):
     return value.strftime("%Y-%m-%d %H:%M:%S")
 
 class BlueButtonRequest(db.Model):
-    __tablename__ = 'bb-case-tracking'
+    __tablename__ = 'request'
     request_id = db.Column(db.Integer, primary_key=True)
     case_id = db.Column(db.Integer, db.ForeignKey('case.case_id'), nullable=False)
     device_id = db.Column(db.Text)
@@ -20,9 +20,19 @@ class BlueButtonRequest(db.Model):
     timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
     case = db.relationship('Case', backref=db.backref('bb-case-tracking'), lazy=True)
     
+    # Optional?
+    # def __init__(self, request_id, case_id, device_id, longitude, latitude, timestamp, case):
+    #     self.request_id = request_id
+    #     self.case_id = case_id
+    #     self.device_id = device_id
+    #     self.longitude = longitude
+    #     self.latitude = latitude
+    #     self.timestamp = timestamp
+    #     self.case = case
+
     def __repr__(self):
         return "ID: {} - [{}] Lat {}, Long {}".format(self.case_id, self.timestamp, self.latitude, self.longitude)
-
+    
     def serialize(self):
         return {
             "request_id": self.request_id,
