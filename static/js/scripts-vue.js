@@ -1,20 +1,38 @@
-// Function for adding a marker to the page.
-function addMarker(location) {
-    marker = new google.maps.Marker({
-        position: location
+var gmap;
+
+function initMap() {
+    
+    gmap = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 29.717394, lng: -95.402931},
+        zoom: 16
     });
+    console.log('Finish init map');
+}
+
+// Function for adding a marker to the page.
+function addMarker(case_id, latitude, longitude) {
+    var latLong = new google.maps.LatLng(latitude, longitude);
+
+    var marker = new google.maps.Marker({
+        position: latLong,
+        title: "Hello, World!"
+    });
+
+    cases[case_id].push(marker);
+    
+    marker.setMap(gmap);
 }
 
 /** 
 *   SocketIO
 */
 const socket = io('http://' + document.domain + ':' + location.port);
-var cases = [];
+var cases = {};
 
 
 socket.on('map message', function(msg) {
     
-    console.log('Receive map message')
+    // console.log('Receive map message')
     if (!(msg.case_id in cases))
         cases[msg.case_id] = [];
     
@@ -24,7 +42,7 @@ socket.on('map message', function(msg) {
 });
 
 socket.on('connect confirm', function(msg) {
-    console.log(msg);
+    // console.log(msg);
     // console.log(requestListModel);
 });
 
@@ -44,7 +62,7 @@ var serverEndPoint = 'http://' + document.domain + ':' + location.port + '/api/r
 var reqListPromise = $.get(serverEndPoint, function(response) {
         var data = JSON.parse(response).result;
         requestListModel = Array.from(data);
-        console.log(requestListModel);
+        // console.log(requestListModel);
     }).promise();
 
 /**
@@ -73,19 +91,19 @@ reqListPromise.done(function( arg ) {
 
     // Add marker to the map
     for (i = 0; i < requestListModel.length; i++) {
-        console.log(requestListModel[i]);
-        var case_id = requestListModel.case_id;
-        var latitude = requestListModel.latitude;
-        var longitude = requestListModel.longitude;
+       
+        var case_id = requestListModel[i].case_id;
+        var latitude = requestListModel[i].latitude;
+        var longitude = requestListModel[i].longitude;
         
-        if (!(case_id in cases)) {
+        if (!cases[case_id]) {
             cases[case_id] = [];
         }
-        
-        var coord = new google.maps.LatLng(latitude, longitude);
-        cases[case_id].push(coord);
-        console.log(cases);
-        addMarker(coord);
+
+        console.log(latitude);
+        console.log(longitude);
+
+        addMarker(case_id, latitude, longitude);
     }
 });
 
