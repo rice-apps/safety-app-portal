@@ -33,6 +33,10 @@ app = CustomFlask(__name__)
 app.config.from_object("config.DevelopmentConfig")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+DATABASE_URL = os.environ['DATABASE_URL']
+# DATABASE_URL = 'postgresql://localhost/rice_safety_app'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+
 # Start services
 socketio = SocketIO(app)
 with app.app_context():
