@@ -13,6 +13,9 @@ import jwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
+#CORS
+from flask_cors import CORS
+
 PRIVATE_KEY = "secret_key"
 
 # Configuration
@@ -29,12 +32,14 @@ class CustomFlask(Flask):
 
 app = CustomFlask(__name__)
 
+CORS(app)
+
 # app.config.from_object(os.environ['APP_SETTINGS'])
 app.config.from_object("config.DevelopmentConfig")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-DATABASE_URL = os.environ['DATABASE_URL']
-# DATABASE_URL = 'postgresql://localhost/rice_safety_app'
+# DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = 'postgresql://localhost/rice_safety_app'
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 
 # Start services
@@ -53,7 +58,7 @@ with app.app_context():
 def webEndpoint():
 	""" Get index """
 	return render_template('index.html')
-	
+
 
 @app.route("/api/numbers", methods=['GET'])
 def numbersEndpoint():
@@ -181,7 +186,7 @@ def request_get():
 		
 		res = {"result": data}
 		
-		return json.dumps(res, default=date_handler)
+		return json.dumps(res, default=date_handler, indent=4, separators=(',', ':'))
 
 
 def request_post():

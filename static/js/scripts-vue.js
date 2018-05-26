@@ -26,7 +26,7 @@ function addMarker(case_id, latitude, longitude) {
 /** 
 *   SocketIO
 */
-const socket = io('http://' + document.domain + ':' + location.port);
+const socket = io('https://' + document.domain + ':' + location.port);
 var cases = {};
 
 
