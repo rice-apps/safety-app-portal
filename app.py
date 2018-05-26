@@ -13,9 +13,6 @@ import jwt
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
-#CORS
-from flask_cors import CORS
-
 PRIVATE_KEY = "secret_key"
 
 # Configuration
@@ -31,8 +28,6 @@ class CustomFlask(Flask):
     ))
 
 app = CustomFlask(__name__)
-
-CORS(app)
 
 # app.config.from_object(os.environ['APP_SETTINGS'])
 app.config.from_object("config.DevelopmentConfig")
